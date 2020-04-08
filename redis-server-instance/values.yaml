@@ -1,0 +1,15 @@
+replicaCount: 1
+
+image:
+  repository: travissmith94/redis-server-instance
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 6379
+redis:
+  conf: >
+    requirepass "secret"
+    bind 127.0.0.1
+    port 6379

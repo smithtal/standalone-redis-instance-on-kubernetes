@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "redis-server-instance.name" . }}-configmap
+  labels: 
+    app: {{ template "redis-server-instance.name" . }} 
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+data:
+  redis.conf: {{ tpl .Values.redis.conf . | quote }}

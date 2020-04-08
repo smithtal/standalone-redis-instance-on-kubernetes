@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "redis-server-instance.fullname" . }}
+  labels:
+    app: {{ template "redis-server-instance.name" . }} 
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "redis-server-instance.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "redis-server-instance.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ template "redis-server-instance.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /usr/local/etc/redis/redis.conf 
+              name: {{ template "redis-server-instance.name" . }}-vol
+      volumes:
+        - name: {{ template "redis-server-instance.name" . }}-vol
+          configMap:
+            name: {{ template "redis-server-instance.name" . }}-configmap
